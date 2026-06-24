@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEXUS FX</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=3.0">
+</head>
+<body>
+    <div id="alert-box" class="hidden"></div>
+    
+    <div id="boot-screen" class="screen boot-screen"><div id="boot-text"></div></div>
+
+    <div id="balance-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 style="color:var(--cyan-neon); font-family:var(--mono); margin-bottom:10px;">[ INJECT CAPITAL ]</h3>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px;">Enter Initial Equity ($)</p>
+            <input type="number" id="input-balance" class="auth-input" placeholder="e.g. 1000" value="1000">
+            <button id="btn-set-balance" class="action-btn glowing">CONFIRM</button>
+        </div>
+    </div>
+
+    <div id="vip-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="border-color: var(--amber-neon);">
+            <h2 style="color:var(--amber-neon); font-family:var(--mono);">VIP ACCESS</h2>
+            <p style="font-size:12px; color:var(--text-muted); margin: 10px 0 20px 0;">Free API requests depleted. Upgrade node to unlock unlimited signals.</p>
+            <a href="#" id="vip-contact-btn" target="_blank" class="action-btn" style="background:var(--amber-neon); color:#000; text-decoration:none; display:flex; justify-content:center; align-items:center;">CONTACT ADMIN</a>
+            <button id="close-vip" style="background:transparent; border:none; color:var(--text-muted); margin-top:10px; font-size:10px; font-family:var(--mono); cursor:pointer;">[ CLOSE ]</button>
+        </div>
+    </div>
+
+    <div id="login-screen" class="screen init-screen hidden">
+        <div class="grid-bg"></div>
+        <div class="login-box">
+            <h2 class="glitch-text">NEXUS FX</h2>
+            <p class="hacker-text">SECURE NODE AUTHENTICATION</p>
+            <input type="email" id="email" class="auth-input" placeholder="ACCESS_EMAIL" required>
+            <input type="password" id="password" class="auth-input" placeholder="NODE_KEY" required>
+            <button id="btn-login" class="action-btn">ESTABLISH CONNECTION</button>
+        </div>
+    </div>
+    
+    <div id="code-screen" class="screen init-screen hidden">
+        <div class="grid-bg"></div>
+        <div class="login-box">
+            <h2 style="color:var(--amber-neon); font-family:var(--mono); margin-bottom:5px;">2FA DECRYPT</h2>
+            <p class="hacker-text">ENTER PAYLOAD KEY</p>
+            <input type="number" id="auth-code" class="auth-input" placeholder="xxxxxx" required>
+            <button id="btn-code" class="action-btn">VERIFY</button>
+        </div>
+    </div>
+
+    <div id="main-screen" class="hidden terminal">
+        
+        <div class="topbar">
+            <div class="topbar-brand">
+                <div class="brand-dot"></div>
+                <div class="brand-name">NEXUS FX</div>
+            </div>
+            <div class="topbar-right">
+                <div class="balance-display">
+                    EQ: <span id="display-balance" style="color:var(--green-neon); margin-left:5px;">$0.00</span>
+                    <span id="btn-edit-balance" style="color:var(--amber-neon); margin-left:8px; cursor:pointer;">⚙</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pairbar">
+            <select id="live-pairs" class="premium-select live"><option value="">LIVE MARKET</option></select>
+            <select id="otc-pairs" class="premium-select otc"><option value="" selected>OTC MARKET</option></select>
+        </div>
+
+        <div class="tab-container" id="tab-container">
+            <div id="tab-aisignal" class="tab-content active-tab">
+                
+                <div class="price-panel">
+                    <div class="price-main">
+                        <div class="price-pair" id="display-pair">EUR/USD OTC</div>
+                        <div class="price-big" id="display-price">1.084<span class="pips">47</span></div>
+                        <div class="price-change">
+                            <div class="price-chg up" id="display-change">+0.00027 (+0.025%)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ind-grid">
+                    <div class="ind-cell">
+                        <div class="ind-title">RSI(14)</div>
+                        <div class="ind-value" id="val-rsi" style="color:var(--amber-neon);">37.55</div>
+                        <div class="ind-sub">NEUTRAL</div>
+                    </div>
+                    <div class="ind-cell">
+                        <div class="ind-title">MACD</div>
+                        <div class="ind-value" id="val-macd" style="color:var(--red-neon);">▼ -0.30</div>
+                        <div class="ind-sub">CONTRACTING</div>
+                    </div>
+                    <div class="ind-cell">
+                        <div class="ind-title">STOCHASTIC</div>
+                        <div class="ind-value" id="val-stoch" style="color:var(--green-neon);">12.4</div>
+                        <div class="ind-sub">OVERSOLD</div>
+                    </div>
+                    <div class="ind-cell">
+                        <div class="ind-title">EMA TREND</div>
+                        <div class="ind-value" id="val-trend" style="color:var(--red-neon);">BEARISH</div>
+                        <div class="ind-sub">EMA20 &lt; EMA50</div>
+                    </div>
+                </div>
+
+                <div class="signal-panel IDLE" id="signal-panel">
+                    <div class="signal-header">
+                        <div class="signal-dir" id="sig-direction">♦ AWAITING</div>
+                    </div>
+                    <div class="signal-body">
+                        <div class="metric-row"><div class="metric-lbl">AI CONFIDENCE</div><div class="metric-val" id="sig-conf">--%</div></div>
+                        <div class="prog-bar"><div class="prog-fill" id="bar-conf" style="width:0%; background:var(--amber-neon);"></div></div>
+                        <div id="ai-analysis-text" class="analysis-text">System standing by. Select parameters to scan liquidity.</div>
+                    </div>
+                </div>
+
+                <div style="padding: 0 15px;">
+                    <div class="time-controls">
+                        <button class="time-btn" data-time="5">5s</button>
+                        <button class="time-btn" data-time="10">10s</button>
+                        <button class="time-btn" data-time="15">15s</button>
+                        <button class="time-btn" data-time="30">30s</button>
+                        <button class="time-btn active" data-time="60">1m</button>
+                    </div>
+                    
+                    <div class="investment-box">
+                        <span style="color:var(--text-muted); font-size:10px; font-weight:bold;">INVESTMENT:</span>
+                        <div style="display:flex; align-items:center; background:var(--bg-deep); border:1px solid var(--border-light); border-radius:4px; padding:5px;">
+                            <span style="color:var(--cyan-neon); margin-right:5px;">$</span>
+                            <input type="number" id="trade-amount" value="10" style="background:transparent; border:none; color:#fff; font-weight:bold; font-size:14px; outline:none; width:60px; text-align:center;">
+                        </div>
+                        <span style="color:var(--green-neon); font-size:9px; font-family:var(--mono);">PAYOUT: 96%</span>
+                    </div>
+
+                    <button id="btn-scan" class="action-btn main-action glowing">▶ ANALYZE & GET SIGNAL</button>
+                </div>
+
+                <div class="section-title">LIVE WATCHLIST</div>
+                <div class="watchlist" id="watchlist"></div>
+            </div>
+            
+            <div id="tab-education" class="hidden tab-content">
+                <div class="section-title">TRADING PROTOCOL</div>
+                <div class="log-container" style="background:var(--bg-card); padding:15px;">
+                    <p style="color:var(--amber-neon); margin-bottom:10px; font-weight:bold;">Strict Rules</p>
+                    <p>> AI calculates risk based on Equity.</p>
+                    <p>> Use exactly 2-5% of balance per trade.</p>
+                    <p>> <span style="color:var(--red-neon);">Martingale:</span> 1-Step recovery permitted.</p>
+                    <p>> Respect exact timeframe constraints.</p>
+                </div>
+                <div class="section-title" style="margin-top:15px;">MARKET INSIGHTS</div>
+                <div id="news-container" class="watchlist"></div>
+            </div>
+
+            <div id="tab-history" class="hidden tab-content">
+                <div class="section-title">EXECUTION LOGS</div>
+                <div id="history-log" class="log-container">
+                    <p style="color:var(--text-muted);">> Awaiting first execution...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <button id="nav-aisignal" class="nav-btn active">📡 Signal</button>
+            <button id="nav-education" class="nav-btn">📚 Rules</button>
+            <button id="nav-history" class="nav-btn">📋 Logs</button>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
